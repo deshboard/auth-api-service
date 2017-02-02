@@ -34,3 +34,8 @@ To install Go dependencies locally run the following commands:
 ``` bash
 $ make install
 ```
+
+
+## License
+
+The MIT License (MIT). Please see [License File](LICENSE) for more information.
