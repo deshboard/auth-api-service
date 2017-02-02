@@ -1,23 +1,18 @@
 GLIDE:=$(shell if which glide > /dev/null 2>&1; then echo "glide"; fi)
+BUILD_SERVICES=service test db
 
 # Setup environment
 setup: build
 	mkdir -p var/
-	docker-compose up -d db
 	make migrate
 
 # Build the service and test containers
 build:
 ifeq ($(FORCE), true)
-	@docker-compose build --force-rm db service test
+	@docker-compose build --force-rm $(BUILD_SERVICES)
 else
-	@docker-compose build db service test
+	@docker-compose build $(BUILD_SERVICES)
 endif
-
-# Run database migrations
-migrate:
-	@docker-compose --file docker-compose.yml --file docker-compose.util.yml run --rm db_check
-	@docker-compose --file docker-compose.yml --file docker-compose.util.yml run --rm service.model.user.migration update
 
 # Start the environment
 start:
@@ -60,4 +55,10 @@ cs:
 csfix:
 	@gofmt -l -w -s .
 
-.PHONY: setup build migrate start stop clean test install cs csfix
+# Run database migrations
+migrate:
+	docker-compose up -d db
+	@docker-compose --file docker-compose.yml --file docker-compose.util.yml run --rm db_check
+	@docker-compose --file docker-compose.yml --file docker-compose.util.yml run --rm service.model.user.migration update
+
+.PHONY: setup build start stop clean test install cs csfix migrate

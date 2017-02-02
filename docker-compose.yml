@@ -1,13 +1,6 @@
 version: "2.1"
 
 services:
-    db:
-        build: db/
-        environment:
-            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-        volumes:
-            - ./var/mysql:/var/lib/mysql
-
     service: &service
         build: .
         links:
@@ -19,6 +12,13 @@ services:
     test:
         <<: *service
         command: go test -v -integration
+
+    db:
+        build: db/
+        environment:
+            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+        volumes:
+            - ./var/mysql:/var/lib/mysql
 
     service.model.user:
         image: deshboard/user-model-service:latest
