@@ -1,0 +1,17 @@
+version: "2.1"
+
+services:
+    db_check:
+        image: jwilder/dockerize
+        command: dockerize -wait tcp://db:3306 -timeout 120s
+        links:
+            - db
+
+    service.model.user.migration:
+        image: deshboard/user-model-service:latest-migration
+        links:
+            - db
+        environment:
+            LIQUIBASE_USERNAME: root
+            LIQUIBASE_PASSWORD: ""
+            LIQUIBASE_URL: jdbc:mysql://db/service_model_user

@@ -1,0 +1,67 @@
+swagger: '2.0'
+info:
+  title: Authentication API Service
+  version: "1.0.0"
+host: service.api.auth
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /authenticate:
+    post:
+      summary: Authenticates a user
+      parameters:
+        - name: credentials
+          in: body
+          description: User credentials
+          required: true
+          schema:
+            $ref: '#/definitions/Credentials'
+      responses:
+        200:
+          description: User successfully authenticated
+          schema:
+            $ref: '#/definitions/Tokens'
+        401:
+          description: Invalid request
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Credentials:
+    type: object
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+        format: password
+    required: ["username", "password"]
+  Tokens:
+    type: object
+    properties:
+      access_token:
+        $ref: '#/definitions/Token'
+    required: ["access_token"]
+  Token:
+    type: object
+    properties:
+      token:
+        type: string
+      expires_at:
+        type: integer
+        format: int32
+    required: ["token", "expires_at"]
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+    required: ["code"]

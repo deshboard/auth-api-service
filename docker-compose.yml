@@ -1,0 +1,33 @@
+version: "2.1"
+
+services:
+    db:
+        build: db/
+        environment:
+            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+        volumes:
+            - ./var/mysql:/var/lib/mysql
+
+    service: &service
+        build: .
+        links:
+            - service.model.user
+        environment:
+            SERVICE_MODEL_USER: service.model.user
+            SIGNING_KEY: change_this
+
+    test:
+        <<: *service
+        command: go test -v -integration
+
+    service.model.user:
+        image: deshboard/user-model-service:latest
+        links:
+            - db
+        environment:
+            DATABASE_TYPE: mysql
+            DATABASE_HOST: db
+            DATABASE_PORT: 3306
+            DATABASE_USER: service_model_user
+            DATABASE_PASS: service_model_user
+            DATABASE_DB: service_model_user
